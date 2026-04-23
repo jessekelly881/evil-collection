@@ -134,9 +134,6 @@
       "gz" 'agent-shell-viewport-refresh))
 
   (evil-collection-define-key 'normal 'agent-shell-diff-mode-map
-    "y" #'agent-shell-diff-accept-all
-    "gx" #'agent-shell-diff-reject-all
-    "go" #'agent-shell-diff-open-file
     "q" #'kill-current-buffer))
 
 (provide 'evil-collection-agent-shell)
