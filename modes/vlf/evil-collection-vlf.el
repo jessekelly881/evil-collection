@@ -35,10 +35,8 @@
 
 (defconst evil-collection-vlf-maps '(vlf-mode-map))
 
-(defcustom evil-collection-vlf-want-g-bindings t
-  "Whether to bind single keys to g prefix."
-  :type 'boolean
-  :group 'evil-collection)
+(define-obsolete-variable-alias 'evil-collection-vlf-want-g-bindings
+  'evil-collection-want-g-bindings "0.0.11")
 
 (defun evil-collection-vlf-decrease-batch-size ()
   "Decrease vlf batch size by factor of 2."
@@ -68,7 +66,7 @@
     "g%" 'vlf-query-replace
     "go" 'vlf-occur)
 
-  (if evil-collection-vlf-want-g-bindings
+  (if evil-collection-want-g-bindings
       (evil-collection-define-key 'normal 'vlf-prefix-map
         "g/" 'vlf-re-search-forward
         "g?" 'vlf-re-search-backward

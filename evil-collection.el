@@ -115,6 +115,11 @@ This will bind additional find-* type commands, e.g. usages, assignments, etc.."
   :type 'boolean
   :group 'evil-collection)
 
+(defcustom evil-collection-want-g-bindings t
+  "Whether to bind g* bindings."
+  :type 'boolean
+  :group 'evil-collection)
+
 (defvar evil-collection--modes-with-delayed-setup
   `(emms
     eshell)

@@ -90,12 +90,8 @@ binding keys to a minor mode created by `evil-collection' instead."
   :type 'boolean
   :group 'evil-collection)
 
-(defcustom evil-collection-diff-mode-want-g-bindings t
-  "Whether to bind to g prefix instead of single letter bindings.
-
-Only applies to `evil-collection-diff-mode-want-minor-mode' is t."
-  :type 'boolean
-  :group 'evil-collection)
+(define-obsolete-variable-alias 'evil-collection-diff-mode-want-g-bindings
+  'evil-collection-want-g-bindings "0.0.11")
 
 (defvar evil-collection-diff-mode-map (make-sparse-keymap))
 
@@ -124,7 +120,7 @@ Only applies to `evil-collection-diff-mode-want-minor-mode' is t."
     "\\" 'read-only-mode
     (kbd "RET") 'diff-goto-source)
 
-  (if evil-collection-diff-mode-want-g-bindings
+  (if evil-collection-want-g-bindings
       (evil-collection-define-key 'normal 'evil-collection-diff-mode-map
         "gA" 'diff-add-change-log-entries-other-window
         "ga" 'diff-apply-hunk
