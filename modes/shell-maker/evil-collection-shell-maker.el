@@ -56,13 +56,13 @@ newline regardless of state."
   (let* ((submit evil-collection-shell-maker-submit-state)
          (newline-state (if (eq submit 'normal) 'insert 'normal)))
     (evil-collection-define-key submit 'shell-maker-mode-map
-      (kbd "RET") #'shell-maker-submit)
+      (kbd "RET") 'shell-maker-submit)
     (evil-collection-define-key newline-state 'shell-maker-mode-map
-      (kbd "RET") #'newline)
+      (kbd "RET") 'newline)
     (evil-collection-define-key 'insert 'shell-maker-mode-map
-      (kbd "S-<return>") #'newline)
+      (kbd "S-<return>") 'newline)
     (evil-collection-define-key 'normal 'shell-maker-mode-map
-      (kbd "S-<return>") #'newline)))
+      (kbd "S-<return>") 'newline)))
 
 (provide 'evil-collection-shell-maker)
 ;;; evil-collection-shell-maker.el ends here
