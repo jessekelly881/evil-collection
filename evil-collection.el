@@ -317,6 +317,7 @@ See `evil-collection-init' and `evil-collection--modes-with-delayed-setup'."
     scroll-lock
     selectrum
     sh-script
+    shell-maker
     ,@(when (>= emacs-major-version 28) '(shortdoc))
     simple
     simple-mpc
