@@ -100,6 +100,12 @@ When this option is enabled, the stash popup is available on \"Z\"."
   :group 'magit
   :type  'boolean)
 
+(defcustom evil-collection-magit-use-v-for-visual-line nil
+  "When non nil, use \"v\" for `evil-visual-line' (old behavior).
+When nil (default), \"v\" uses `evil-visual-char'."
+  :group 'magit
+  :type 'boolean)
+
 (defcustom evil-collection-magit-use-$-for-end-of-line t
   "When non nil, use \"$\" for `evil-end-of-line'.
 
@@ -374,7 +380,9 @@ evil-collection-magit was loaded."
        `((,states magit-mode-map "\C-u" evil-scroll-up)))
 
      (if evil-collection-magit-use-y-for-yank
-         `((,states magit-mode-map "v"    evil-visual-line)
+         `((,states magit-mode-map "v"    ,(if evil-collection-magit-use-v-for-visual-line
+                                              'evil-visual-line
+                                            'evil-visual-char))
            (,states magit-mode-map "V"    evil-visual-line)
            (,states magit-mode-map "\C-w"  evil-window-map)
            (,states magit-mode-map "y")
