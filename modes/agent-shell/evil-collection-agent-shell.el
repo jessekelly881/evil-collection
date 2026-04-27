@@ -57,7 +57,7 @@ Walks the buffer backward from `point-max' looking for text with the
 marker that `agent-shell--make-permission-button' adds to each button."
   (save-excursion
     (goto-char (point-max))
-    (when-let ((match (text-property-search-backward
+    (when-let* ((match (text-property-search-backward
                        'agent-shell-permission-button t t)))
       (get-text-property (prop-match-beginning match) 'keymap))))
 
