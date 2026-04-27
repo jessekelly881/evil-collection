@@ -39,6 +39,15 @@
 (defvar agent-shell-viewport-view-mode-map)
 (defvar agent-shell-diff-mode-map)
 
+(defcustom evil-collection-agent-shell-want-permission-bindings t
+  "When non-nil, bind permission button keys in normal state.
+
+`y', `n', `!', and `v' will activate the latest pending permission
+button when one is visible, and fall through to their default Evil
+commands otherwise."
+  :type 'boolean
+  :group 'evil-collection)
+
 ;;; Permission button helpers.
 
 (defun evil-collection-agent-shell--latest-permission-keymap ()
@@ -128,11 +137,12 @@ KEY is a string passed to `kbd'."
     "n" 'self-insert-command
     "p" 'self-insert-command)
 
-  (evil-collection-define-key 'normal 'agent-shell-mode-map
-    "v" evil-collection-agent-shell-permission-view-diff
-    "y" evil-collection-agent-shell-permission-allow-once
-    "n" evil-collection-agent-shell-permission-reject-once
-    "!" evil-collection-agent-shell-permission-allow-always)
+  (when evil-collection-agent-shell-want-permission-bindings
+    (evil-collection-define-key 'normal 'agent-shell-mode-map
+      "v" evil-collection-agent-shell-permission-view-diff
+      "y" evil-collection-agent-shell-permission-allow-once
+      "n" evil-collection-agent-shell-permission-reject-once
+      "!" evil-collection-agent-shell-permission-allow-always))
 
   (evil-collection-define-key 'normal 'agent-shell-mode-map
     (kbd "TAB") 'agent-shell-next-item
