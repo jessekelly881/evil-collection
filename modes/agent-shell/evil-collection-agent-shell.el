@@ -39,14 +39,100 @@
 (defvar agent-shell-viewport-view-mode-map)
 (defvar agent-shell-diff-mode-map)
 
+;;; Permission button helpers.
+
+(defun evil-collection-agent-shell--latest-permission-keymap ()
+  "Return the keymap of the latest pending permission button, or nil.
+Walks the buffer backward from `point-max' looking for text with the
+`agent-shell-permission-button' property -- the navigatable single-char
+marker that `agent-shell--make-permission-button' adds to each button."
+  (save-excursion
+    (goto-char (point-max))
+    (when-let ((match (text-property-search-backward
+                       'agent-shell-permission-button t t)))
+      (get-text-property (prop-match-beginning match) 'keymap))))
+
+(defun evil-collection-agent-shell--pending-permission-p ()
+  "Return non-nil when the current buffer has a pending permission button."
+  (and (evil-collection-agent-shell--latest-permission-keymap) t))
+
+(defun evil-collection-agent-shell--press (key)
+  "Dispatch KEY through the latest pending permission's button keymap.
+KEY is a string passed to `kbd'."
+  (let* ((km (or (evil-collection-agent-shell--latest-permission-keymap)
+                 (user-error "No pending permission")))
+         (binding (lookup-key km (kbd key))))
+    (cond
+     ((commandp binding) (call-interactively binding))
+     ((null binding) (user-error "No `%s' action on this permission" key))
+     (t (user-error "Unexpected binding for `%s': %S" key binding)))))
+
+(defun evil-collection-agent-shell-permission-allow-once ()
+  "Allow the latest pending tool-call permission once."
+  (interactive)
+  (evil-collection-agent-shell--press "y"))
+
+(defun evil-collection-agent-shell-permission-reject-once ()
+  "Reject the latest pending tool-call permission and interrupt the agent."
+  (interactive)
+  (evil-collection-agent-shell--press "C-c C-c"))
+
+(defun evil-collection-agent-shell-permission-allow-always ()
+  "Always-allow the tool kind for the latest pending permission."
+  (interactive)
+  (evil-collection-agent-shell--press "!"))
+
+(defun evil-collection-agent-shell-permission-view-diff ()
+  "View the diff for the latest pending permission, if any."
+  (interactive)
+  (evil-collection-agent-shell--press "v"))
+
+(defvar evil-collection-agent-shell-permission-allow-once
+  `(menu-item "" nil :filter
+              ,(lambda (&optional _)
+                 (when (evil-collection-agent-shell--pending-permission-p)
+                   'evil-collection-agent-shell-permission-allow-once))))
+
+(defvar evil-collection-agent-shell-permission-reject-once
+  `(menu-item "" nil :filter
+              ,(lambda (&optional _)
+                 (when (evil-collection-agent-shell--pending-permission-p)
+                   'evil-collection-agent-shell-permission-reject-once))))
+
+(defvar evil-collection-agent-shell-permission-allow-always
+  `(menu-item "" nil :filter
+              ,(lambda (&optional _)
+                 (when (evil-collection-agent-shell--pending-permission-p)
+                   'evil-collection-agent-shell-permission-allow-always))))
+
+(defvar evil-collection-agent-shell-permission-view-diff
+  `(menu-item "" nil :filter
+              ,(lambda (&optional _)
+                 (when (evil-collection-agent-shell--pending-permission-p)
+                   'evil-collection-agent-shell-permission-view-diff))))
+
 ;;;###autoload
 (defun evil-collection-agent-shell-setup ()
   "Set up `evil' bindings for `agent-shell'."
   ;; `agent-shell-mode-map' binds \"n\" and \"p\" at the map level, which causes
   ;; them to intercept keystrokes even in insert state.  Remove those bindings
   ;; entirely.
-  (define-key agent-shell-mode-map "n" nil)
-  (define-key agent-shell-mode-map "p" nil)
+  (if (fboundp 'keymap-unset)
+      (progn
+        (keymap-unset agent-shell-mode-map "n" t)
+        (keymap-unset agent-shell-mode-map "p" t))
+    (define-key agent-shell-mode-map "n" nil)
+    (define-key agent-shell-mode-map "p" nil))
+
+  (evil-collection-define-key 'insert 'agent-shell-mode-map
+    "n" 'self-insert-command
+    "p" 'self-insert-command)
+
+  (evil-collection-define-key 'normal 'agent-shell-mode-map
+    "v" evil-collection-agent-shell-permission-view-diff
+    "y" evil-collection-agent-shell-permission-allow-once
+    "n" evil-collection-agent-shell-permission-reject-once
+    "!" evil-collection-agent-shell-permission-allow-always)
 
   (evil-collection-define-key 'normal 'agent-shell-mode-map
     (kbd "TAB") 'agent-shell-next-item
@@ -134,7 +220,14 @@
       "gz" 'agent-shell-viewport-refresh))
 
   (evil-collection-define-key 'normal 'agent-shell-diff-mode-map
-    "q" #'kill-current-buffer))
+    "q" #'kill-current-buffer)
+
+  (add-hook 'agent-shell-mode-hook #'evil-normalize-keymaps)
+  (add-hook 'agent-shell-viewport-view-mode-hook #'evil-normalize-keymaps)
+  (add-hook 'agent-shell-viewport-edit-mode-hook #'evil-normalize-keymaps)
+
+  (advice-add 'agent-shell-jump-to-latest-permission-button-row
+              :after (lambda (&rest _) (evil-normalize-keymaps))))
 
 (provide 'evil-collection-agent-shell)
 ;;; evil-collection-agent-shell.el ends here
