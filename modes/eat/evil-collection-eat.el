@@ -62,9 +62,9 @@ SSH-accessed Emacs that also uses `evil-mode'."
   (let* ((submit evil-collection-repl-submit-state)
          (newline-state (if (eq submit 'normal) 'insert 'normal)))
     (evil-collection-define-key submit 'eat-line-mode-map
-      (kbd "RET") #'eat-line-send-input
-      (kbd "\C-m") #'eat-line-send-input
-      [return] #'eat-line-send-input)
+      (kbd "RET") 'eat-line-send-input
+      (kbd "\C-m") 'eat-line-send-input
+      [return] 'eat-line-send-input)
     (evil-collection-define-key newline-state 'eat-line-mode-map
       (kbd "RET") #'newline
       (kbd "\C-m") #'newline
