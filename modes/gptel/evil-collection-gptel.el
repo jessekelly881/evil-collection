@@ -33,11 +33,6 @@
 (defconst evil-collection-gptel-maps
   '(gptel-mode-map gptel-context-buffer-mode-map))
 
-(defcustom evil-collection-gptel-want-ret-to-send t
-  "When non nil, RET sends query to LLM."
-  :group 'evil-collection
-  :type 'boolean)
-
 (defcustom evil-collection-gptel-want-shift-ret-to-send t
   "When non nil, S-RET sends query to LLM."
   :group 'evil-collection
@@ -52,9 +47,12 @@
 ;;;###autoload
 (defun evil-collection-gptel-setup ()
   "Set up `evil' bindings for gptel."
-  (when evil-collection-gptel-want-ret-to-send
-    (evil-collection-define-key '(normal visual) 'gptel-mode-map
-      (kbd "RET") 'gptel-send))
+  (let* ((submit evil-collection-repl-submit-state)
+         (newline-state (if (eq submit 'normal) 'insert 'normal)))
+    (evil-collection-define-key submit 'gptel-mode-map
+      (kbd "RET") 'gptel-send)
+    (evil-collection-define-key newline-state 'gptel-mode-map
+      (kbd "RET") 'newline))
   (if evil-collection-gptel-want-shift-ret-menu
       (evil-collection-define-key '(normal visual) 'gptel-mode-map
         (kbd "S-RET") 'gptel-menu
