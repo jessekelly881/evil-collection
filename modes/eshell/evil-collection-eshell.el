@@ -114,12 +114,18 @@ appropriate in some cases like terminals."
     (kbd "C-n") 'eshell-next-matching-input-from-input
     (kbd "C-p") 'eshell-previous-matching-input-from-input
 
-    (kbd "RET") 'eshell-send-input
     (kbd "C-c C-c") 'evil-collection-eshell-interrupt-process
     "c" 'evil-collection-eshell-evil-change
     "C" 'evil-collection-eshell-evil-change-line
     "d" 'evil-collection-eshell-evil-delete
     "D" 'evil-collection-eshell-evil-delete-line)
+
+  (let* ((submit evil-collection-repl-submit-state)
+         (newline-state (if (eq submit 'normal) 'insert 'normal)))
+    (evil-collection-define-key submit 'eshell-mode-map
+      (kbd "RET") 'eshell-send-input)
+    (evil-collection-define-key newline-state 'eshell-mode-map
+      (kbd "RET") 'newline))
 
   (when (< emacs-major-version 30)
     (evil-collection-define-key 'normal 'eshell-mode-map

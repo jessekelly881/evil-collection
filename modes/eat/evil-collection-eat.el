@@ -30,7 +30,9 @@
 (require 'evil-collection)
 (require 'eat nil t)
 
-(defconst evil-collection-eat-maps '(eat-mode-map))
+(defconst evil-collection-eat-maps '(eat-mode-map eat-line-mode-map))
+
+(defvar eat-line-mode-map)
 
 (defvar-local evil-collection-eat-send-escape-to-eat-p nil
   "Track whether or not we send ESC to `eat' or `emacs'.")
@@ -56,6 +58,17 @@ SSH-accessed Emacs that also uses `evil-mode'."
 (defun evil-collection-eat-setup ()
   "Set up `evil' bindings for `eat'."
   (evil-set-initial-state 'eat-mode 'insert)
+
+  (let* ((submit evil-collection-repl-submit-state)
+         (newline-state (if (eq submit 'normal) 'insert 'normal)))
+    (evil-collection-define-key submit 'eat-line-mode-map
+      (kbd "RET") #'eat-line-send-input
+      (kbd "\C-m") #'eat-line-send-input
+      [return] #'eat-line-send-input)
+    (evil-collection-define-key newline-state 'eat-line-mode-map
+      (kbd "RET") #'newline
+      (kbd "\C-m") #'newline
+      [return] #'newline))
 
   (evil-collection-define-key '(normal insert) 'eat-mode-map
     (kbd "C-c C-z") 'evil-collection-eat-toggle-send-escape)

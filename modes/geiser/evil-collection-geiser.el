@@ -82,6 +82,17 @@
   (evil-collection-define-key 'insert 'geiser-repl-mode-map
     (kbd "S-<return>") 'geiser-repl--newline-and-indent)
 
+  (let* ((submit evil-collection-repl-submit-state)
+         (newline-state (if (eq submit 'normal) 'insert 'normal)))
+    (evil-collection-define-key submit 'geiser-repl-mode-map
+      (kbd "RET") 'geiser-repl-maybe-send
+      (kbd "\C-m") 'geiser-repl-maybe-send
+      [return] 'geiser-repl-maybe-send)
+    (evil-collection-define-key newline-state 'geiser-repl-mode-map
+      (kbd "RET") 'geiser-repl--newline-and-indent
+      (kbd "\C-m") 'geiser-repl--newline-and-indent
+      [return] 'geiser-repl--newline-and-indent))
+
   (evil-collection-define-key 'normal 'geiser-repl-mode-map
     "gd" 'geiser-edit-symbol-at-point
     (kbd "C-t") 'geiser-pop-symbol-stack

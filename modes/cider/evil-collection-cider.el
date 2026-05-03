@@ -135,11 +135,16 @@ ex. \(cider-debug-mode-send-reply \":next\"\)"
   (evil-collection-define-key '(normal visual) 'cider-repl-mode-map
     ;; FIXME: This seems to get overwritten by `cider-switch-to-repl-buffer'.
     "gz" 'cider-switch-to-last-clojure-buffer
-    (kbd "RET") 'cider-repl-return
-
     "gr" 'cider-refresh
     "gf" 'cider-find-resource
     "K" 'cider-doc)
+
+  (let* ((submit evil-collection-repl-submit-state)
+         (newline-state (if (eq submit 'normal) 'insert 'normal)))
+    (evil-collection-define-key submit 'cider-repl-mode-map
+      (kbd "RET") 'cider-repl-return)
+    (evil-collection-define-key newline-state 'cider-repl-mode-map
+      (kbd "RET") 'newline))
 
   (unless cider-use-xref
     (evil-collection-define-key '(normal visual) 'cider-repl-mode-map

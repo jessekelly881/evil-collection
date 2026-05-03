@@ -139,9 +139,15 @@ it is not appropriate in some cases like terminals."
     (kbd "C-c C-d") 'term-send-eof
     (kbd "C-c C-z") 'term-stop-subjob)
 
+  (let* ((submit evil-collection-repl-submit-state)
+         (newline-state (if (eq submit 'normal) 'insert 'normal)))
+    (evil-collection-define-key submit 'term-mode-map
+      (kbd "RET") 'term-send-input)
+    (evil-collection-define-key newline-state 'term-mode-map
+      (kbd "RET") 'newline))
+
   (evil-collection-define-key 'normal 'term-mode-map
     (kbd "C-c C-k") 'evil-collection-term-char-mode-insert
-    (kbd "RET") 'term-send-input
 
     (kbd "p") 'term-paste
 

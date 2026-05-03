@@ -209,8 +209,14 @@ Evil version of `sly-eval-print-last-expression' that accounts for
     ;; "r" 'sly-xref-retract ; TODO: Equivalent for Sly?
     )
 
+  (let* ((submit evil-collection-repl-submit-state)
+         (newline-state (if (eq submit 'normal) 'insert 'normal)))
+    (evil-collection-define-key submit 'sly-mrepl-mode-map
+      (kbd "RET") 'sly-mrepl-return)
+    (evil-collection-define-key newline-state 'sly-mrepl-mode-map
+      (kbd "RET") 'newline))
+
   (evil-collection-define-key 'normal 'sly-mrepl-mode-map
-    (kbd "RET") 'sly-mrepl-return
     "gj" 'sly-mrepl-next-prompt
     "gk" 'sly-mrepl-previous-prompt
     (kbd "C-j") 'sly-mrepl-next-prompt

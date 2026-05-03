@@ -273,6 +273,13 @@ But don't allow the cursor to move bellow the last prompt line."
     (kbd "C-z") 'vterm--self-insert
     (kbd "<delete>") 'vterm-send-delete)
 
+  (let* ((submit evil-collection-repl-submit-state)
+         (newline-state (if (eq submit 'normal) 'insert 'normal)))
+    (evil-collection-define-key submit 'vterm-mode-map
+      (kbd "RET") 'vterm-send-return)
+    (evil-collection-define-key newline-state 'vterm-mode-map
+      (kbd "RET") 'newline))
+
   (evil-collection-define-key 'normal 'vterm-mode-map
     "[[" 'vterm-previous-prompt
     "]]" 'vterm-next-prompt
@@ -284,7 +291,6 @@ But don't allow the cursor to move bellow the last prompt line."
     "D" 'evil-collection-vterm-delete-line
     "x" 'evil-collection-vterm-delete-char
     "X" 'evil-collection-vterm-delete-backward-char
-    (kbd "RET") 'vterm-send-return
     "^" 'evil-collection-vterm-first-non-blank
     "i" 'evil-collection-vterm-insert
     "I" 'evil-collection-vterm-insert-line

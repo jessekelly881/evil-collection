@@ -112,9 +112,14 @@
     (kbd "<tab>") 'telega-chatbuf-complete-or-next-link
     (kbd "<backtab>") 'telega-chatbuf-prev-link
 
-    (kbd "RET") 'telega-chatbuf-newline-or-input-send
-
     "q" 'quit-window)
+
+  (let* ((submit evil-collection-repl-submit-state)
+         (newline-state (if (eq submit 'normal) 'insert 'normal)))
+    (evil-collection-define-key submit 'telega-chat-mode-map
+      (kbd "RET") 'telega-chatbuf-newline-or-input-send)
+    (evil-collection-define-key newline-state 'telega-chat-mode-map
+      (kbd "RET") 'newline))
 
   (evil-collection-define-key 'normal 'telega-image-mode-map
     "ga" telega-prefix-map
