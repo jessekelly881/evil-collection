@@ -454,6 +454,15 @@ This is a list of symbols that are suitable for input to
   :type '(repeat symbol)
   :group 'evil-collection)
 
+(defcustom evil-collection-repl-submit-state 'normal
+  "Evil state in which RET submits the prompt in REPL-like buffers.
+
+The other state gets RET bound to `newline'.  S-RET always inserts a
+newline regardless of state."
+  :type '(choice (const :tag "Submit in normal state" normal)
+                 (const :tag "Submit in insert state" insert))
+  :group 'evil-collection)
+
 (defvar evil-collection-setup-hook nil
   "Hook run by `evil-collection-init' for each mode that is evilified.
 This hook runs after all setup (including keybindings) for a mode has already

@@ -37,32 +37,29 @@
   "Evil bindings for `shell-maker'."
   :group 'evil-collection)
 
-(defcustom evil-collection-shell-maker-submit-state 'normal
-  "Evil state in which RET submits the prompt in `shell-maker' buffers.
-
-The other state gets RET bound to `newline'.  S-RET always inserts a
-newline regardless of state."
-  :type '(choice (const :tag "Submit in normal state" normal)
-                 (const :tag "Submit in insert state" insert))
-  :group 'evil-collection-shell-maker)
+(make-obsolete-variable 'evil-collection-shell-maker-submit-state
+                        'evil-collection-repl-submit-state
+                        "evil-collection 0.0.2")
 
 (defconst evil-collection-shell-maker-maps '(shell-maker-mode-map))
+
 
 (defvar shell-maker-mode-map)
 
 ;;;###autoload
 (defun evil-collection-shell-maker-setup ()
   "Set up `evil' bindings for `shell-maker'."
-  (let* ((submit evil-collection-shell-maker-submit-state)
+  (let* ((submit evil-collection-repl-submit-state)
          (newline-state (if (eq submit 'normal) 'insert 'normal)))
     (evil-collection-define-key submit 'shell-maker-mode-map
       (kbd "RET") 'shell-maker-submit)
     (evil-collection-define-key newline-state 'shell-maker-mode-map
-      (kbd "RET") 'newline)
-    (evil-collection-define-key 'insert 'shell-maker-mode-map
-      (kbd "S-<return>") 'newline)
-    (evil-collection-define-key 'normal 'shell-maker-mode-map
-      (kbd "S-<return>") 'newline)))
+      (kbd "RET") 'newline))
+
+  (evil-collection-define-key 'insert 'shell-maker-mode-map
+    (kbd "S-<return>") 'newline)
+  (evil-collection-define-key 'normal 'shell-maker-mode-map
+    (kbd "S-<return>") 'newline))
 
 (provide 'evil-collection-shell-maker)
 ;;; evil-collection-shell-maker.el ends here
