@@ -58,7 +58,7 @@ marker that `agent-shell--make-permission-button' adds to each button."
   (save-excursion
     (goto-char (point-max))
     (when-let* ((match (text-property-search-backward
-                       'agent-shell-permission-button t t)))
+                        'agent-shell-permission-button t t)))
       (get-text-property (prop-match-beginning match) 'keymap))))
 
 (defun evil-collection-agent-shell--pending-permission-p ()
@@ -232,6 +232,17 @@ KEY is a string passed to `kbd'."
   (evil-collection-define-key 'normal 'agent-shell-diff-mode-map
     "q" #'kill-current-buffer)
 
+  (if evil-collection-want-g-bindings
+      (evil-collection-define-key 'normal 'agent-shell-diff-mode-map
+        "gf" 'agent-shell-diff-open-file
+        "gy" 'agent-shell-diff-accept-all
+        "gn" 'agent-shell-diff-reject-all)
+    (evil-collection-define-key 'normal 'agent-shell-diff-mode-map
+      "f" 'agent-shell-diff-open-file
+      "y" 'agent-shell-diff-accept-all
+      "n" 'agent-shell-diff-reject-all))
+
+  (add-hook 'agent-shell-diff-mode-hook #'evil-normalize-keymaps)
   (add-hook 'agent-shell-mode-hook #'evil-normalize-keymaps)
   (add-hook 'agent-shell-viewport-view-mode-hook #'evil-normalize-keymaps)
   (add-hook 'agent-shell-viewport-edit-mode-hook #'evil-normalize-keymaps)
