@@ -30,7 +30,8 @@
 (require 'elisp-mode)
 (require 'evil-collection)
 
-(defconst evil-collection-elisp-mode-maps '(emacs-lisp-mode-map))
+(defconst evil-collection-elisp-mode-maps '(emacs-lisp-mode-map
+                                            emacs-lisp-compilation-mode-map))
 
 (defun evil-collection-elisp-mode-last-sexp-setup-props (beg end value alt1 alt2)
   "Set up text properties for the output of `elisp--eval-last-sexp'.
@@ -76,6 +77,8 @@ alternative printed representations that can be displayed."
 ;;;###autoload
 (defun evil-collection-elisp-mode-setup ()
   "Set up `evil' bindings for `elisp-mode'."
+  (add-hook 'emacs-lisp-compilation-mode-hook 'evil-normalize-keymaps)
+
   (unless evil-move-beyond-eol
     (advice-add 'eval-print-last-sexp :around 'evil-collection-elisp-mode-last-sexp))
   (advice-add 'last-sexp-setup-props
@@ -84,6 +87,9 @@ alternative printed representations that can be displayed."
   (evil-set-initial-state 'emacs-lisp-mode 'normal)
   (evil-collection-define-key 'normal 'emacs-lisp-mode-map
     "gz" 'evil-collection-elisp-mode-ielm-repl)
+
+  (evil-collection-define-key 'normal 'emacs-lisp-compilation-mode-map
+    "gr" 'emacs-lisp-compilation-recompile)
 
   (when evil-collection-want-find-usages-bindings
     (evil-collection-define-key 'normal 'emacs-lisp-mode-map
