@@ -197,6 +197,7 @@ See `evil-collection-init' and `evil-collection--modes-with-delayed-setup'."
     eat
     ebib
     ebuku
+    eca
     edbi
     edebug
     ediff
