@@ -1053,8 +1053,8 @@ instead of the modes in `evil-collection-mode-list'.
              (fn-sym (intern (format "evil-collection--init-%s" mode-sym))))
         (defalias fn-sym
           (lambda ()
-            (evil-collection-init (list mode))
-            (remove-hook hook-name fn-sym)))
+            (remove-hook hook-name fn-sym)
+            (evil-collection-init (list mode))))
         (add-hook hook-name fn-sym)))))
 
 (defvar evil-collection-delete-operators '(evil-delete
