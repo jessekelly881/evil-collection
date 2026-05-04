@@ -1028,9 +1028,9 @@ instead of the modes in `evil-collection-mode-list'.
               ;; entry from the mode list instead.
               (cl-some
                (lambda (m)
-                 (or (when-let ((entry (assq m deferred)))
+                 (or (when-let* ((entry (assq m deferred)))
                        (setf (car entry) mode) t)
-                     (when-let ((entry (assq m hooked)))
+                     (when-let* ((entry (assq m hooked)))
                        (setf (car entry) mode) t)))
                (if (consp mode) mode (list mode))))
             modes)))
