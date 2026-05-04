@@ -1016,9 +1016,9 @@ instead of the modes in `evil-collection-mode-list'.
         (deferred)  ; alist of (mode . delay)
         (hooked))   ; alist of (mode . hook)
     (dolist (config configs)
-      (if-let ((hook (plist-get (cdr config) :hook)))
+      (if-let* ((hook (plist-get (cdr config) :hook)))
           (push (cons (car config) hook) hooked)
-        (when-let ((defer (plist-get (cdr config) :defer)))
+        (when-let* ((defer (plist-get (cdr config) :defer)))
           (push (cons (car config) defer) deferred))))
     (let ((filtered-modes
            (cl-remove-if
