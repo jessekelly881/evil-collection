@@ -401,17 +401,15 @@ this confusing. It will be included if
     (comint :defer t)
     (debug :defer t)
     (diff-mode :defer t)
-    (dired :defer t)
+    (dired :hook dired-mode)
     (edebug :defer t)
     (eldoc :defer t)
     (help :defer t)
     (image :defer t)
     (indent :defer t)
-    (dired :defer t)
     (info :defer t)
     (replace :defer t)
     (outline :defer t)
-    (package :defer t)
     (package-menu :defer t)
     (process-menu :defer t)
     (simple :defer t)
@@ -429,7 +427,11 @@ NOTE: The API of this variable may change drastically.
 
 Currently supported keys:
 
-:defer t or TIME in seconds to defer loading mode."
+:defer t or TIME in seconds to defer loading mode.
+
+:hook HOOK-NAME to initialize the mode when a hook fires.  The hook
+name does not need the \"-hook\" suffix; it will be appended
+automatically.  When :hook is present, :defer is ignored."
   :type '(repeat (choice symbol sexp))
   :group 'evil-collection)
 
@@ -1011,38 +1013,49 @@ instead of the modes in `evil-collection-mode-list'.
       (or (listp modes) (setq modes (list modes)))
     (setq modes evil-collection-mode-list))
   (let ((configs evil-collection-config)
-        (deferred-modes)
-        (delays))
+        (deferred)  ; alist of (mode . delay)
+        (hooked))   ; alist of (mode . hook)
     (dolist (config configs)
-      (let ((defer (plist-get (cdr config) :defer)))
-        (when defer
-          (push (car config) deferred-modes)
-          (push defer delays))))
+      (if-let ((hook (plist-get (cdr config) :hook)))
+          (push (cons (car config) hook) hooked)
+        (when-let ((defer (plist-get (cdr config) :defer)))
+          (push (cons (car config) defer) deferred))))
     (let ((filtered-modes
            (cl-remove-if
             (lambda (mode)
-              (let ((filterp nil)
-                    (modes (if (consp mode) mode (list mode))))
-                (dolist (m modes)
-                  (let ((x (memq m deferred-modes)))
-                    (when x
-                      (setf filterp t)
-                      ;; `evil-collection-config' format is slightly different
-                      ;; than `evil-collection-mode-list', so use the mode
-                      ;; entry from the mode list instead.
-                      (setf (car x) mode))))
-                filterp))
+              ;; `evil-collection-config' format is slightly different
+              ;; than `evil-collection-mode-list', so use the mode
+              ;; entry from the mode list instead.
+              (cl-some
+               (lambda (m)
+                 (or (when-let ((entry (assq m deferred)))
+                       (setf (car entry) mode) t)
+                     (when-let ((entry (assq m hooked)))
+                       (setf (car entry) mode) t)))
+               (if (consp mode) mode (list mode))))
             modes)))
       (evil-collection-init filtered-modes))
-    (message (format "Deferring: %S" deferred-modes))
-    (dotimes (i (length deferred-modes))
-      (let ((mode (nth i deferred-modes))
-            (delay (nth i delays)))
-        ;; (message (format "Delaying %S..."
-        ;;                  (if (consp mode) (car mode) mode)))
+    (message (format "Deferring: %S" (mapcar #'car deferred)))
+    (dolist (entry deferred)
+      (let ((mode (car entry))
+            (delay (cdr entry)))
         (run-with-idle-timer
          (if (numberp delay) delay evil-collection-defer-delay) nil
-         (apply-partially 'evil-collection-init (list mode)))))))
+         (apply-partially 'evil-collection-init (list mode)))))
+    (dolist (entry hooked)
+      (let* ((mode (car entry))
+             (hook-sym (cdr entry))
+             (hook-name (let ((name (symbol-name hook-sym)))
+                          (if (string-suffix-p "-hook" name)
+                              hook-sym
+                            (intern (concat name "-hook")))))
+             (mode-sym (if (consp mode) (car mode) mode))
+             (fn-sym (intern (format "evil-collection--init-%s" mode-sym))))
+        (defalias fn-sym
+          (lambda ()
+            (evil-collection-init (list mode))
+            (remove-hook hook-name fn-sym)))
+        (add-hook hook-name fn-sym)))))
 
 (defvar evil-collection-delete-operators '(evil-delete
                                            evil-cp-delete
