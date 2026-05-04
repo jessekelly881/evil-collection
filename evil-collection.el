@@ -146,6 +146,14 @@ See `evil-collection-init' and `evil-collection--modes-with-delayed-setup'."
   :type 'boolean
   :group 'evil-collection)
 
+(defcustom evil-collection-defer-delay 3
+  "Default idle delay in seconds used when deferring mode initialization.
+
+Used as a fallback when no explicit delay is specified for a mode in
+`evil-collection-defer'."
+  :type 'number
+  :group 'evil-collection)
+
 (defvar evil-collection--supported-modes
   `(2048-game
     ag
@@ -1033,7 +1041,7 @@ instead of the modes in `evil-collection-mode-list'.
         ;; (message (format "Delaying %S..."
         ;;                  (if (consp mode) (car mode) mode)))
         (run-with-idle-timer
-         (if (numberp delay) delay 3) nil
+         (if (numberp delay) delay evil-collection-defer-delay) nil
          (apply-partially 'evil-collection-init (list mode)))))))
 
 (defvar evil-collection-delete-operators '(evil-delete
