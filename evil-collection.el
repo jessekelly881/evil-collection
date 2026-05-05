@@ -52,22 +52,30 @@
 
 (defvar evil-want-integration)
 (defvar evil-want-keybinding)
-(if (featurep 'evil-keybindings)
-    (if evil-want-keybinding
-        (display-warning
-         '(evil-collection)
-         "Make sure to set `evil-want-keybinding' to nil before loading evil \
+
+(defvar evil-collection--startup-warning-flag nil)
+
+(defun evil-collection-maybe-display-startup-warning ()
+  "Warn if `evil-want-keybinding' was not set before loading Evil.
+Runs at most once."
+  (unless evil-collection--startup-warning-flag
+    (setq evil-collection--startup-warning-flag t)
+    (when (featurep 'evil-keybindings)
+      (if evil-want-keybinding
+          (display-warning
+           '(evil-collection)
+           "Make sure to set `evil-want-keybinding' to nil before loading evil \
 or evil-collection.\
 \n
 See https://github.com/emacs-evil/evil-collection/issues/60 for more details.")
-      (display-warning
-       '(evil-collection)
-       "`evil-want-keybinding' was set to nil but not before loading evil.\
+        (display-warning
+         '(evil-collection)
+         "`evil-want-keybinding' was set to nil but not before loading evil.\
 \n
 Make sure to set `evil-want-keybinding' to nil before loading evil \
 or evil-collection.\
 \n
-See https://github.com/emacs-evil/evil-collection/issues/60 for more details.")))
+See https://github.com/emacs-evil/evil-collection/issues/60 for more details.")))))
 
 (unless (featurep 'evil-integration)
   (message "Requiring evil-integration. Set evil-want-integration to t to\
@@ -969,6 +977,7 @@ instance:
 If MODES is specified (as either one mode or a list of modes), use those modes
 instead of the modes in `evil-collection-mode-list'."
   (interactive)
+  (evil-collection-maybe-display-startup-warning)
   (if modes
       (or (listp modes) (setq modes (list modes)))
     (setq modes evil-collection-mode-list))
