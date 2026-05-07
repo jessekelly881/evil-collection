@@ -273,12 +273,9 @@ But don't allow the cursor to move bellow the last prompt line."
     (kbd "C-z") 'vterm--self-insert
     (kbd "<delete>") 'vterm-send-delete)
 
-  (let* ((submit evil-collection-repl-submit-state)
-         (newline-state (if (eq submit 'normal) 'insert 'normal)))
+  (let* ((submit evil-collection-repl-submit-state))
     (evil-collection-define-key submit 'vterm-mode-map
-      (kbd "RET") 'vterm-send-return)
-    (evil-collection-define-key newline-state 'vterm-mode-map
-      (kbd "RET") 'newline))
+      (kbd "RET") 'vterm-send-return))
 
   (evil-collection-define-key 'normal 'vterm-mode-map
     "[[" 'vterm-previous-prompt
